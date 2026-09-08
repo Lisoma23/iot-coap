@@ -13,11 +13,18 @@ from aiocoap import Message
 
 
 class TimeResource(Resource):
+    ct = 0
+    rt = "clock"
+    if_ = "core.s"
+
     async def render_get(self, request):
         return Message(payload=time.strftime("%Y-%m-%dT%H:%M:%SZ").encode())
 
 
 class TempResource(ObservableResource):
+    ct = 0
+    rt = "temperature"
+
     def __init__(self):
         super().__init__()
         self.value = "22.5"
@@ -44,6 +51,10 @@ class TempResource(ObservableResource):
 
 
 class LedResource(ObservableResource):
+    ct = 0
+    rt = "light"
+    if_ = "core.s"
+
     def __init__(self):
         super().__init__()
         self.state = "off"
@@ -91,6 +102,21 @@ class BigLogResource(Resource):
         return Message(payload=self.data)
 
 
+class SensorResource(Resource):
+    """Ressource de l'arborescence /sensors/... (module 3, exercice 3.2)."""
+
+    def __init__(self, value="0"):
+        super().__init__()
+        self.value = value
+
+    async def render_get(self, request):
+        return Message(payload=self.value.encode())
+
+    async def render_put(self, request):
+        self.value = request.payload.decode()
+        return Message(code=aiocoap.CHANGED)
+
+
 def main():
     root = Site()
     root.add_resource(["time"], TimeResource())
@@ -98,6 +124,13 @@ def main():
     root.add_resource(["led"], LedResource())
     root.add_resource(["logs"], LogsResource())
     root.add_resource(["biglog"], BigLogResource())
+    sensors = Site()
+    room1 = Site()
+    room1.add_resource(["temperature"], SensorResource("23.5"))
+    room1.add_resource(["humidity"], SensorResource("55"))
+    room1.add_resource(["light"], SensorResource("150"))
+    sensors.add_resource(["room1"], room1)
+    root.add_resource(["sensors"], sensors)
     root.add_resource([".well-known", "core"], WKCResource(root.get_resources_as_linkheader))
 
     asyncio.run(serve(root))
