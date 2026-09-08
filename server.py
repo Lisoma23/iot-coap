@@ -43,7 +43,7 @@ class TempResource(ObservableResource):
         return Message(code=aiocoap.DELETED)
 
 
-class LedResource(Resource):
+class LedResource(ObservableResource):
     def __init__(self):
         super().__init__()
         self.state = "off"
@@ -53,10 +53,12 @@ class LedResource(Resource):
 
     async def render_put(self, request):
         self.state = request.payload.decode()
+        self.updated_state()
         return Message(code=aiocoap.CHANGED)
 
     async def render_delete(self, request):
         self.state = "off"
+        self.updated_state()
         return Message(code=aiocoap.DELETED)
 
 
