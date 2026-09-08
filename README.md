@@ -8,6 +8,9 @@ CoAP pour l'IoT : comprendre le protocole Constrained Application Protocol, et m
 
 ## Contenu
 
+- `server.py` : serveur CoAP Python (librairie [`aiocoap`](https://github.com/chrysn/aiocoap))
+- `Dockerfile` : image du serveur
+- `docker-compose.yml` : lancement du serveur CoAP
 - `compte-rendu/` : compte rendu à rédiger
 
 Le sujet est disponible via l'issue de suivi du projet et les échanges sur les issues.
@@ -20,7 +23,24 @@ Le sujet est disponible via l'issue de suivi du projet et les échanges sur les 
 
 ## Installation / mise en route
 
-Environnement Docker Compose : serveur + client CoAP (`coapcloud/coap:latest`). Voir les issues des modules pour le détail des manipulations.
+> Note : l'image Docker `coapcloud/coap` a été retirée de Docker Hub. On utilise un serveur CoAP Python (`aiocoap`).
+
+Lancer le serveur (port UDP 5683) :
+
+```
+docker compose up -d --build
+```
+
+Le client en ligne de commande (`aiocoap-client`) est fourni avec la librairie :
+
+```
+pip install aiocoap
+aiocoap-client coap://localhost:5683/time
+```
+
+> Sous Docker Desktop (macOS), un message « Response arrived from different address » peut s'afficher en plus de la réponse : il est dû au NAT Docker et sans impact.
+
+Les commandes détaillées par module sont dans les issues de suivi (issues #1, #2, #3).
 
 ## Équipe
 
