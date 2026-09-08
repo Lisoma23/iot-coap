@@ -9,6 +9,7 @@ CoAP pour l'IoT : comprendre le protocole Constrained Application Protocol, et m
 ## Contenu
 
 - `server.py` : serveur CoAP Python (librairie [`aiocoap`](https://github.com/chrysn/aiocoap))
+- `observe.py` : client d'observation OBSERVE (le CLI `aiocoap-client --observe` de la 0.4.17 n'affiche pas les notifications)
 - `Dockerfile` : image du serveur
 - `docker-compose.yml` : lancement du serveur CoAP
 - `compte-rendu/` : compte rendu à rédiger
