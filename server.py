@@ -6,7 +6,6 @@ et répond sur le port standard CoAP 5683/UDP.
 """
 import asyncio
 import time
-import random
 
 import aiocoap
 from aiocoap.resource import Resource, ObservableResource, Site, WKCResource
@@ -90,28 +89,20 @@ class BigLogResource(Resource):
         return Message(payload=self.data)
 
 
-async def simulate_temperature(temp):
-    while True:
-        await asyncio.sleep(2)
-        temp.set("%.1f" % (20 + random.random() * 10))
-
-
 def main():
     root = Site()
-    temp = TempResource()
     root.add_resource(["time"], TimeResource())
-    root.add_resource(["temp"], temp)
+    root.add_resource(["temp"], TempResource())
     root.add_resource(["led"], LedResource())
     root.add_resource(["logs"], LogsResource())
     root.add_resource(["biglog"], BigLogResource())
     root.add_resource([".well-known", "core"], WKCResource(root.get_resources_as_linkheader))
 
-    asyncio.run(serve(root, temp))
+    asyncio.run(serve(root))
 
 
-async def serve(root, temp):
+async def serve(root):
     await aiocoap.Context.create_server_context(root, ("0.0.0.0", 5683))
-    asyncio.get_running_loop().create_task(simulate_temperature(temp))
     await asyncio.get_running_loop().create_future()
 
 
